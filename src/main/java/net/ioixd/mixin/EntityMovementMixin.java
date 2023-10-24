@@ -1,8 +1,10 @@
 package net.ioixd.mixin;
 
+import com.cobblemon.mod.common.entity.pokemon.PokemonBehaviourFlag;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,6 +35,12 @@ public class EntityMovementMixin {
                     pokemon.getTypes().forEach(ty -> {
                         if(ty.getName().equals("flying")) {
                             entity.setNoGravity(!entity.isOnGround());
+                            if(entity.isOnGround() && pokemonEntity.getPose() == EntityPose.FALL_FLYING) {
+                                pokemonEntity.setPose(EntityPose.STANDING);
+                                pokemonEntity.setBehaviourFlag(PokemonBehaviourFlag.FLYING, false);
+                                pokemonEntity.updateVelocity(1.0f,
+                                        player.getRotationVector());
+                            }
                         }
                     });
                 }

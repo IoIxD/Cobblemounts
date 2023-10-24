@@ -11,6 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -30,6 +31,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import net.ioixd.PlayerJump;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 
@@ -40,39 +42,18 @@ public class Cobblemounts implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		UseEntityCallback.EVENT.register((player, world, hand, entity, entityHitResult) -> {
-			if (entity instanceof PokemonEntity) {
-				PokemonEntity pkmnEntity = (PokemonEntity) entity;
+			if (entity instanceof PokemonEntity pkmnEntity) {
 				ServerPlayerEntity serverPlayer = pkmnEntity.getPokemon().getOwnerPlayer();
 				if (serverPlayer != null) {
 					if (serverPlayer.getUuid() == player.getUuid()) {
 						player.startRiding(entity, false);
+						pkmnEntity.clearGoalsAndTasks();
 					}
 				}
 			}
 			return ActionResult.PASS;
 		});
-		ServerPlayNetworking.registerGlobalReceiver(new Identifier("cobblemounts:player_jumped"), new ServerPlayNetworking.PlayChannelHandler() {
-			@Override
-			public void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-				Entity vehicle = player.getVehicle();
-				if(vehicle != null) {
-					if(vehicle.isOnGround()) {
-						if(vehicle instanceof PokemonEntity living) {
-							living.fallDistance = -10.0f;
-							Vec3d vec3d = living.getVelocity();
-							Direction moveDir = living.getMovementDirection();
-							living.setVelocity(vec3d.x, EntityHelper.GetJumpVelocityMultiplier(living), vec3d.z);
-							if (living.isSprinting()) {
-								float f = living.getYaw() * ((float)Math.PI / 180);
-								living.setVelocity(living.getVelocity().add(-MathHelper.sin(f) * 0.2f, 0.0, MathHelper.cos(f) * 0.2f));
-							}
-							living.velocityDirty = true;
-						}
-
-					}
-
-				}
-			}
-		});
+		ServerPlayNetworking.registerGlobalReceiver(new Identifier("cobblemounts:player_jumped"), new PlayerJump());
+		ServerPlayNetworking.registerGlobalReceiver(new Identifier("cobblemounts:player_crouched"), new PlayerCrouch());
 	}
 }
