@@ -21,6 +21,7 @@ public class PlayerJump implements ServerPlayNetworking.PlayChannelHandler  {
             if(vehicle.isOnGround()) {
                 if(vehicle instanceof PokemonEntity living) {
                     Pokemon pokemon = living.getPokemon();
+                    player.fallDistance = -1024.0f;
                     living.fallDistance = -1024.0f;
                     Vec3d vec3d = living.getVelocity();
                     living.addVelocity(vec3d.x, EntityHelper.GetJumpVelocityMultiplier(living), vec3d.z);

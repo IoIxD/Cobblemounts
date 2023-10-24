@@ -1,18 +1,18 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "cobblemounts",
 	"version": "${version}",
 	"name": "CobbleMounts",
 	"description": "Mod that allows one to mount Cobblemon that they own.",
 	"authors": [
-		"IoI_zS"
+		"IoI_xD"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"license": "LGPL-3",
+	"icon": "assets/cobblemounts/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -23,9 +23,8 @@
 		]
 	},
 	"mixins": [
-		"modid.mixins.json",
 		{
-			"config": "modid.mixins.json",
+			"config": "cobblemounts.mixins.json",
 			"environment": "server"
 		}
 	],
