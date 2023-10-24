@@ -37,13 +37,7 @@ public class PlayerMixin {
                 if(movement.z < 0.0) {
                     living.travel(player.getRotationVector().multiply(-1.0,-1.0,-1.0));
                 }
-                Pokemon pokemon = living.getPokemon();
-                pokemon.getTypes().forEach(ty -> {
-                    if(ty.getName().equals("flying")) {
-                        StatusEffectInstance inst = new StatusEffectInstance(StatusEffects.LEVITATION, -1, 256);
-                        living.addStatusEffect(inst);
-                    }
-                });
+
             }
         }
     }
