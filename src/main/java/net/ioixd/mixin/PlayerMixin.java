@@ -29,6 +29,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import com.cobblemon.mod.common.entity.PoseType;
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.PokemonModelRepository;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @Mixin(PlayerEntity.class)
 public class PlayerMixin {
     int ticksInLiquid = 0;
@@ -50,6 +52,7 @@ public class PlayerMixin {
                 boolean inLiquid = water instanceof FluidBlock;
 
                 float speedModifier = pokemon.isLegendary() ? 0.0f : 0.05f;
+                AtomicBoolean isFlying = new AtomicBoolean(false);
 
                 pokemon.getTypes().forEach(ty -> {
                     switch(ty.getName()) {
@@ -60,9 +63,7 @@ public class PlayerMixin {
                                         living.updateVelocity((pokemon.getSpeed() / 500.0f) + speedModifier,
                                                 player.getRotationVector());
                                         living.move(MovementType.SELF, living.getVelocity());
-                                        if (living.horizontalCollision) {
-                                            living.teleport(lastPos.x, lastPos.y, lastPos.z);
-                                        }
+                                        isFlying.set(true);
                                     }
                                     living.setPose(EntityPose.SWIMMING);
                                 } else {
@@ -76,6 +77,7 @@ public class PlayerMixin {
                                     living.updateVelocity((pokemon.getSpeed() / 500.0f) + speedModifier,
                                             player.getRotationVector());
                                     living.move(MovementType.SELF, living.getVelocity());
+                                    isFlying.set(true);
                                 }
                                 living.setPose(EntityPose.FALL_FLYING);
                                 living.setBehaviourFlag(PokemonBehaviourFlag.FLYING, true);
@@ -87,7 +89,9 @@ public class PlayerMixin {
                     }
                 });
                 if (movement.z > 0.0) {
-                    living.travel(player.getRotationVector());
+                    if (!isFlying.get()) {
+                        living.travel(player.getRotationVector());
+                    }
                     World world = living.getWorld();
                     BlockPos forwardPos = switch (player.getMovementDirection()) {
                         case NORTH -> living.getBlockPos().north();
