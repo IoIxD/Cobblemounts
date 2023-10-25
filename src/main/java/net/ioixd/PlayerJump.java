@@ -24,7 +24,7 @@ public class PlayerJump implements ServerPlayNetworking.PlayChannelHandler  {
                     player.fallDistance = -1024.0f;
                     living.fallDistance = -1024.0f;
                     Vec3d vec3d = living.getVelocity();
-                    living.addVelocity(vec3d.x, EntityHelper.GetJumpVelocityMultiplier(living), vec3d.z);
+                    living.setVelocity(vec3d.x, 0.75, vec3d.z);
                     float f = living.getYaw() * ((float)Math.PI / 180);
                     if (living.isMoving().get()) {
                         living.addVelocity(-MathHelper.sin(f) * (pokemon.getSpeed() / 12.0f), 0.0, MathHelper.cos(f) * (pokemon.getSpeed() / 12.0f));
