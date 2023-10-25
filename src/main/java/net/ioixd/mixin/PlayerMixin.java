@@ -34,10 +34,13 @@ public class PlayerMixin {
 
     @Inject(at = @At("HEAD"), method = "travel", locals = LocalCapture.CAPTURE_FAILHARD)
     private void travel(Vec3d movement, CallbackInfo info) {
+        System.out.println("=============\ntravel function called!");
         PlayerEntity player = ((PlayerEntity) (Object) this);
         Entity entity = player.getVehicle();
         if (entity != null) {
+            System.out.println("entity isn't null");
             if (entity instanceof PokemonEntity living) {
+                System.out.println("entity is Pokemon");
                 Pokemon pokemon = living.getPokemon();
 
                 living.bodyYaw = living.headYaw = player.getYaw();
@@ -51,6 +54,7 @@ public class PlayerMixin {
 
                 float speedModifier = pokemon.isLegendary() ? 0.0f : 0.05f;
 
+                System.out.println("checking pokemon types");
                 pokemon.getTypes().forEach(ty -> {
                     switch(ty.getName()) {
                         case "water":
@@ -80,7 +84,9 @@ public class PlayerMixin {
                             break;
                     }
                 });
+                System.out.println("checking movement");
                 if (movement.z > 0.0) {
+                    System.out.println("movement.z greater then zero");
                     living.travel(player.getRotationVector());
                     World world = living.getWorld();
                     BlockPos forwardPos = switch (player.getMovementDirection()) {
@@ -102,10 +108,12 @@ public class PlayerMixin {
                     }
 
                 } else if (movement.z < 0.0) {
+                    System.out.println("movement.z lesser then zero");
                     living.travel(player.getRotationVector().multiply(-1.0, -1.0, -1.0));
                 }
             }
         }
+        System.out.println("=============\n");
     }
 
 }
