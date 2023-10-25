@@ -8,6 +8,7 @@ import com.cobblemon.mod.common.pokemon.Pokemon;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.HorseEntity;
@@ -48,7 +49,6 @@ public class PlayerMixin {
                 Block water = living.getBlockStateAtPos().getBlock();
                 boolean inLiquid = water instanceof FluidBlock;
 
-
                 float speedModifier = pokemon.isLegendary() ? 0.0f : 0.05f;
 
                 pokemon.getTypes().forEach(ty -> {
@@ -56,8 +56,13 @@ public class PlayerMixin {
                         case "water":
                                 if(inLiquid) {
                                     if (movement.z != 0.0) {
+                                        Vec3d lastPos = player.getPos();
                                         living.updateVelocity((pokemon.getSpeed() / 500.0f) + speedModifier,
                                                 player.getRotationVector());
+                                        living.move(MovementType.SELF, living.getVelocity());
+                                        if (living.horizontalCollision) {
+                                            living.teleport(lastPos.x, lastPos.y, lastPos.z);
+                                        }
                                     }
                                     living.setPose(EntityPose.SWIMMING);
                                 } else {
@@ -70,6 +75,7 @@ public class PlayerMixin {
                                 if (movement.z != 0.0) {
                                     living.updateVelocity((pokemon.getSpeed() / 500.0f) + speedModifier,
                                             player.getRotationVector());
+                                    living.move(MovementType.SELF, living.getVelocity());
                                 }
                                 living.setPose(EntityPose.FALL_FLYING);
                                 living.setBehaviourFlag(PokemonBehaviourFlag.FLYING, true);
