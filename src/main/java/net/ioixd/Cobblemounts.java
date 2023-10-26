@@ -6,10 +6,6 @@ import static net.minecraft.server.command.CommandManager.*;
 
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.ioixd.Config.ListUse;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -18,10 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
-import com.cobblemon.mod.common.item.CobblemonItem;
-import com.cobblemon.mod.common.item.group.CobblemonItemGroups;
-
-import kotlin.jvm.JvmStatic;
 
 public class Cobblemounts implements ModInitializer {
 	public static final String MOD_ID = "Cobblemounts";

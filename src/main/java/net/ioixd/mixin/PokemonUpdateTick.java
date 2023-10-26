@@ -31,9 +31,12 @@ public class PokemonUpdateTick {
                     entity.bodyYaw = entity.headYaw = player.getYaw();
                     float speedModifier = pokemon.isLegendary() ? 0.0f : (float) Cobblemounts.CONFIG.legendaryModifier;
                     float movementSpeed = player.getMovementSpeed() * (pokemon.getSpeed() / 12.0f) + speedModifier;
+                    System.out.println(movementSpeed + ", " + Cobblemounts.CONFIG.cappedSpeed + ", "
+                            + Cobblemounts.CONFIG.speedCap);
                     if (Cobblemounts.CONFIG.cappedSpeed) {
                         if (movementSpeed >= Cobblemounts.CONFIG.speedCap) {
                             movementSpeed = (float) Cobblemounts.CONFIG.speedCap;
+                            System.out.println(movementSpeed);
                         }
                     }
                     entity.setMovementSpeed(movementSpeed);

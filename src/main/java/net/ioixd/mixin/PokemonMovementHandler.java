@@ -36,8 +36,6 @@ public class PokemonMovementHandler {
                 living.bodyYaw = living.headYaw = player.getYaw();
                 entity.setPitch(entity.getPitch());
 
-                living.setMovementSpeed(player.getMovementSpeed() * (pokemon.getSpeed() / 12.0f));
-
                 Block water = living.getBlockStateAtPos().getBlock();
                 boolean inLiquid = water instanceof FluidBlock;
 
@@ -115,12 +113,14 @@ public class PokemonMovementHandler {
                         default -> living.getBlockPos();
                     };
                     BlockState state = world.getBlockState(forwardPos);
+                    System.out.println("forwardPos: " + forwardPos);
                     Block forwardBlock = state.getBlock();
                     if (!forwardBlock.isTransparent(state, world, forwardPos)
                             && !(forwardBlock instanceof FluidBlock)) {
                         BlockPos upperPos = new BlockPos(forwardPos.getX(), forwardPos.getY() + 1, forwardPos.getZ());
                         BlockState upperState = world.getBlockState(upperPos);
                         Block upperBlock = upperState.getBlock();
+                        System.out.println("upperPos: " + upperPos);
                         if (upperBlock.isTransparent(upperState, world, upperPos)) {
                             living.teleport(upperPos.getX(), upperPos.getY(), upperPos.getZ());
                         }
