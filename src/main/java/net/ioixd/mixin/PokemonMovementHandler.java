@@ -105,22 +105,24 @@ public class PokemonMovementHandler {
                         living.travel(player.getRotationVector());
                     }
                     World world = living.getWorld();
-                    BlockPos forwardPos = switch (player.getMovementDirection()) {
-                        case NORTH -> living.getBlockPos().north();
-                        case SOUTH -> living.getBlockPos().south();
-                        case EAST -> living.getBlockPos().east();
-                        case WEST -> living.getBlockPos().west();
-                        default -> living.getBlockPos();
-                    };
+                    BlockPos forwardPos = living.getBlockPos();
+                    int width = (int) Math.floor(living.getWidth());
+                    for (int i = 0; i < width; i++) {
+                        forwardPos = switch (player.getMovementDirection()) {
+                            case NORTH -> forwardPos.north();
+                            case SOUTH -> forwardPos.south();
+                            case EAST -> forwardPos.east();
+                            case WEST -> forwardPos.west();
+                            default -> forwardPos;
+                        };
+                    }
                     BlockState state = world.getBlockState(forwardPos);
-                    System.out.println("forwardPos: " + forwardPos);
                     Block forwardBlock = state.getBlock();
                     if (!forwardBlock.isTransparent(state, world, forwardPos)
                             && !(forwardBlock instanceof FluidBlock)) {
                         BlockPos upperPos = new BlockPos(forwardPos.getX(), forwardPos.getY() + 1, forwardPos.getZ());
                         BlockState upperState = world.getBlockState(upperPos);
                         Block upperBlock = upperState.getBlock();
-                        System.out.println("upperPos: " + upperPos);
                         if (upperBlock.isTransparent(upperState, world, upperPos)) {
                             living.teleport(upperPos.getX(), upperPos.getY(), upperPos.getZ());
                         }

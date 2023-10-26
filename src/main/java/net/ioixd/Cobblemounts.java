@@ -6,6 +6,7 @@ import static net.minecraft.server.command.CommandManager.*;
 
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.item.Item;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -61,6 +62,7 @@ public class Cobblemounts implements ModInitializer {
 							}
 
 						}
+						Item item = player.getMainHandStack().getItem();
 						player.startRiding(entity, false);
 						pkmnEntity.clearGoalsAndTasks();
 					}
