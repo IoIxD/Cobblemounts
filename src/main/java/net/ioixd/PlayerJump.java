@@ -9,25 +9,26 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class PlayerJump implements ServerPlayNetworking.PlayChannelHandler  {
+public class PlayerJump implements ServerPlayNetworking.PlayChannelHandler {
     @Override
-    public void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+    public void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
+            PacketByteBuf buf, PacketSender responseSender) {
         Entity vehicle = player.getVehicle();
-        if(vehicle != null) {
-            if(vehicle.isOnGround()) {
-                if(vehicle instanceof PokemonEntity living) {
+        if (vehicle != null) {
+            if (vehicle.isOnGround()) {
+                if (vehicle instanceof PokemonEntity living) {
                     Pokemon pokemon = living.getPokemon();
                     player.fallDistance = -1024.0f;
                     living.fallDistance = -1024.0f;
                     Vec3d vec3d = living.getVelocity();
                     living.setVelocity(vec3d.x, 0.75, vec3d.z);
-                    float f = living.getYaw() * ((float)Math.PI / 180);
+                    float f = living.getYaw() * ((float) Math.PI / 180);
                     if (living.isMoving().get()) {
-                        living.addVelocity(-MathHelper.sin(f) * (pokemon.getSpeed() / 12.0f), 0.0, MathHelper.cos(f) * (pokemon.getSpeed() / 12.0f));
+                        living.addVelocity(-MathHelper.sin(f) * (pokemon.getSpeed() / 12.0f), 0.0,
+                                MathHelper.cos(f) * (pokemon.getSpeed() / 12.0f));
                     }
                     living.velocityDirty = true;
                 }

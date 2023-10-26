@@ -8,16 +8,14 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
-public class PlayerCrouch implements ServerPlayNetworking.PlayChannelHandler  {
+public class PlayerCrouch implements ServerPlayNetworking.PlayChannelHandler {
     @Override
-    public void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+    public void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
+            PacketByteBuf buf, PacketSender responseSender) {
         Entity vehicle = player.getVehicle();
-        if(vehicle != null) {
-            if(vehicle instanceof PokemonEntity living) {
+        if (vehicle != null) {
+            if (vehicle instanceof PokemonEntity living) {
                 living.initGoals();
             }
         }

@@ -1,38 +1,28 @@
 package net.ioixd.mixin;
 
-import com.cobblemon.mod.common.client.render.models.blockbench.pokemon.PokemonFloatingState;
-import com.cobblemon.mod.common.client.render.models.blockbench.pose.Pose;
 import com.cobblemon.mod.common.entity.pokemon.PokemonBehaviourFlag;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
+
+import net.ioixd.Cobblemounts;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.mob.PhantomEntity;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.WaterFluid;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.blockpredicate.SolidBlockPredicate;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import com.cobblemon.mod.common.entity.PoseType;
-import com.cobblemon.mod.common.client.render.models.blockbench.repository.PokemonModelRepository;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Mixin(PlayerEntity.class)
-public class PlayerMixin {
+public class PokemonMovementHandler {
     int ticksInLiquid = 0;
 
     @Inject(at = @At("HEAD"), method = "travel", locals = LocalCapture.CAPTURE_FAILHARD)
@@ -51,36 +41,60 @@ public class PlayerMixin {
                 Block water = living.getBlockStateAtPos().getBlock();
                 boolean inLiquid = water instanceof FluidBlock;
 
-                float speedModifier = pokemon.isLegendary() ? 0.0f : 0.05f;
+                float speedModifier = pokemon.isLegendary() ? 0.0f : (float) Cobblemounts.CONFIG.legendaryModifier;
                 AtomicBoolean isFlying = new AtomicBoolean(false);
 
+                double movementSpeed_ = (pokemon.getSpeed() / 500.0f) + speedModifier;
+                if (Cobblemounts.CONFIG.cappedSpeed) {
+                    if (movementSpeed_ >= Cobblemounts.CONFIG.flyingSpeedCap) {
+                        movementSpeed_ = Cobblemounts.CONFIG.flyingSpeedCap;
+                    }
+                }
+                float movementSpeed = (float) movementSpeed_;
+
                 pokemon.getTypes().forEach(ty -> {
-                    switch(ty.getName()) {
+                    switch (ty.getName()) {
                         case "water":
-                                if(inLiquid) {
-                                    if (movement.z != 0.0) {
-                                        Vec3d lastPos = player.getPos();
-                                        living.updateVelocity((pokemon.getSpeed() / 500.0f) + speedModifier,
-                                                player.getRotationVector());
-                                        living.move(MovementType.SELF, living.getVelocity());
-                                        isFlying.set(true);
-                                    }
-                                    living.setPose(EntityPose.SWIMMING);
-                                } else {
-                                    living.updateVelocity(0.0f, player.getRotationVector());
-                                    living.setPose(EntityPose.STANDING);
-                                }
-                            break;
                         case "flying":
-                            if (!living.isOnGround() && !inLiquid) {
+                            boolean condition;
+                            EntityPose animation;
+                            boolean flying;
+                            switch (ty.getName()) {
+                                case "water":
+                                    if (!Cobblemounts.CONFIG.allowSwimming) {
+                                        return;
+                                    }
+                                    condition = inLiquid;
+                                    animation = EntityPose.SWIMMING;
+                                    flying = false;
+                                    break;
+                                case "flying":
+                                    if (!Cobblemounts.CONFIG.allowFlying) {
+                                        return;
+                                    }
+                                    condition = !living.isOnGround() && !inLiquid;
+                                    animation = EntityPose.FALL_FLYING;
+                                    flying = true;
+                                    break;
+                                // We will never hit this part but we need to set the values anyways
+                                // to make the compiler happy.
+                                default:
+                                    condition = false;
+                                    animation = null;
+                                    flying = false;
+                                    break;
+                            }
+                            ;
+                            if (condition) {
                                 if (movement.z != 0.0) {
-                                    living.updateVelocity((pokemon.getSpeed() / 500.0f) + speedModifier,
-                                            player.getRotationVector());
+                                    living.updateVelocity(movementSpeed, player.getRotationVector());
                                     living.move(MovementType.SELF, living.getVelocity());
                                     isFlying.set(true);
                                 }
-                                living.setPose(EntityPose.FALL_FLYING);
-                                living.setBehaviourFlag(PokemonBehaviourFlag.FLYING, true);
+                                if (flying) {
+                                    living.setBehaviourFlag(PokemonBehaviourFlag.FLYING, true);
+                                }
+                                living.setPose(animation);
                             } else {
                                 living.updateVelocity(0.0f, player.getRotationVector());
                                 living.setPose(EntityPose.STANDING);
@@ -100,19 +114,21 @@ public class PlayerMixin {
                         case WEST -> living.getBlockPos().west();
                         default -> living.getBlockPos();
                     };
-                    BlockState state =world.getBlockState(forwardPos);
+                    BlockState state = world.getBlockState(forwardPos);
                     Block forwardBlock = state.getBlock();
-                    if(!forwardBlock.isTransparent(state, world, forwardPos) && !(forwardBlock instanceof FluidBlock)) {
+                    if (!forwardBlock.isTransparent(state, world, forwardPos)
+                            && !(forwardBlock instanceof FluidBlock)) {
                         BlockPos upperPos = new BlockPos(forwardPos.getX(), forwardPos.getY() + 1, forwardPos.getZ());
                         BlockState upperState = world.getBlockState(upperPos);
                         Block upperBlock = upperState.getBlock();
-                        if(upperBlock.isTransparent(upperState, world, upperPos)) {
+                        if (upperBlock.isTransparent(upperState, world, upperPos)) {
                             living.teleport(upperPos.getX(), upperPos.getY(), upperPos.getZ());
                         }
                     }
-
                 } else if (movement.z < 0.0) {
-                    living.travel(player.getRotationVector().multiply(-1.0, -1.0, -1.0));
+                    if (!isFlying.get()) {
+                        living.travel(player.getRotationVector().multiply(-1.0, -1.0, -1.0));
+                    }
                 }
             }
         }

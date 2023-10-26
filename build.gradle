@@ -1,6 +1,19 @@
+buildscript {
+  repositories {
+    maven {
+      url = uri("https://plugins.gradle.org/m2/")
+    }
+  }
+  dependencies {
+    classpath("com.github.johnrengelman:shadow:8.1.1")
+  }
+}
+
+
 plugins {
 	id 'fabric-loom' version '1.4-SNAPSHOT'
 	id 'maven-publish'
+	id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 version = project.mod_version
@@ -39,18 +52,21 @@ loom {
 }
 
 dependencies {
-	// To change the versions see the gradle.properties file
+	// Minecraft shit
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
+	// Required mod shit
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	include(modImplementation('me.lucko:fabric-permissions-api:0.2-SNAPSHOT'))
+	modImplementation('me.lucko:fabric-permissions-api:0.2-SNAPSHOT')
 	modImplementation("curse.maven:cobblemon-687131:${project.cobblemon_curse_file_id}")
 	compileOnly 'net.luckperms:api:5.4'
 	modImplementation("curse.maven:architectury-api-419699:4555749")
+
+	include(implementation('com.moandjiezana.toml:toml4j:0.7.2'))
 }
+
 
 processResources {
 	inputs.property "version", project.version
