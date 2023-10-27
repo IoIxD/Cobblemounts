@@ -32,7 +32,7 @@ public class PokemonMovementHandler {
         Entity entity = player.getVehicle();
         if (entity != null) {
             if (entity instanceof PokemonEntity living) {
-
+                World world = living.getWorld();
                 Pokemon pokemon = living.getPokemon();
 
                 living.bodyYaw = living.headYaw = player.getYaw();
@@ -106,8 +106,7 @@ public class PokemonMovementHandler {
                     return;
                 }
                 if (movement.z > 0.0) {
-                    World world = living.getWorld();
-                    travelWhilePushingOut(player.getRotationVector(), living, player, world);
+                    living.travel(player.getRotationVector());
                     BlockPos forwardPos = getBlockPos(living, player);
                     if (!isBlockPosTransparent(forwardPos, world)) {
                         BlockPos upperPos = new BlockPos(forwardPos.getX(), forwardPos.getY() + 1, forwardPos.getZ());
@@ -123,15 +122,6 @@ public class PokemonMovementHandler {
                     living.travel(player.getRotationVector().multiply(-1.0, -1.0, -1.0));
                 }
             }
-        }
-    }
-
-    private static void travelWhilePushingOut(Vec3d rot, PokemonEntity living, PlayerEntity player, World world) {
-        living.travel(rot);
-        while (!isBlockPosTransparent(player.getBlockPos(), world) &&
-                !isBlockPosTransparent(player.getBlockPos().add(0, 1, 0), world)) {
-            System.out.println("pushing");
-            living.travel(rot.multiply(-1.0, -1.0, -1.0));
         }
     }
 
