@@ -11,6 +11,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Box;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +66,7 @@ public class Cobblemounts implements ModInitializer {
 						}
 						Item item = player.getMainHandStack().getItem();
 						player.startRiding(entity, false);
+
 						pkmnEntity.clearGoalsAndTasks();
 					}
 				}

@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,6 +32,7 @@ public class PokemonMovementHandler {
         Entity entity = player.getVehicle();
         if (entity != null) {
             if (entity instanceof PokemonEntity living) {
+
                 Pokemon pokemon = living.getPokemon();
 
                 living.bodyYaw = living.headYaw = player.getYaw();
@@ -100,40 +102,58 @@ public class PokemonMovementHandler {
                             break;
                     }
                 });
+                if (isFlying.get()) {
+                    return;
+                }
                 if (movement.z > 0.0) {
-                    if (!isFlying.get()) {
-                        living.travel(player.getRotationVector());
-                    }
                     World world = living.getWorld();
-                    BlockPos forwardPos = living.getBlockPos();
-                    int width = (int) Math.floor(living.getWidth());
-                    for (int i = 0; i < width; i++) {
-                        forwardPos = switch (player.getMovementDirection()) {
-                            case NORTH -> forwardPos.north();
-                            case SOUTH -> forwardPos.south();
-                            case EAST -> forwardPos.east();
-                            case WEST -> forwardPos.west();
-                            default -> forwardPos;
-                        };
-                    }
-                    BlockState state = world.getBlockState(forwardPos);
-                    Block forwardBlock = state.getBlock();
-                    if (!forwardBlock.isTransparent(state, world, forwardPos)
-                            && !(forwardBlock instanceof FluidBlock)) {
+                    travelWhilePushingOut(player.getRotationVector(), living, player, world);
+                    BlockPos forwardPos = getBlockPos(living, player);
+                    if (!isBlockPosTransparent(forwardPos, world)) {
                         BlockPos upperPos = new BlockPos(forwardPos.getX(), forwardPos.getY() + 1, forwardPos.getZ());
-                        BlockState upperState = world.getBlockState(upperPos);
-                        Block upperBlock = upperState.getBlock();
-                        if (upperBlock.isTransparent(upperState, world, upperPos)) {
-                            living.teleport(upperPos.getX(), upperPos.getY(), upperPos.getZ());
+                        if (isBlockPosTransparent(upperPos, world)) {
+                            BlockPos upperUpperPos = new BlockPos(upperPos.getX(), upperPos.getY() + 1,
+                                    upperPos.getZ());
+                            if (isBlockPosTransparent(upperUpperPos, world)) {
+                                living.teleport(upperPos.getX(), upperPos.getY(), upperPos.getZ());
+                            }
                         }
                     }
                 } else if (movement.z < 0.0) {
-                    if (!isFlying.get()) {
-                        living.travel(player.getRotationVector().multiply(-1.0, -1.0, -1.0));
-                    }
+                    living.travel(player.getRotationVector().multiply(-1.0, -1.0, -1.0));
                 }
             }
         }
+    }
+
+    private static void travelWhilePushingOut(Vec3d rot, PokemonEntity living, PlayerEntity player, World world) {
+        living.travel(rot);
+        while (!isBlockPosTransparent(player.getBlockPos(), world) &&
+                !isBlockPosTransparent(player.getBlockPos().add(0, 1, 0), world)) {
+            System.out.println("pushing");
+            living.travel(rot.multiply(-1.0, -1.0, -1.0));
+        }
+    }
+
+    private static boolean isBlockPosTransparent(BlockPos pos, World world) {
+        BlockState state = world.getBlockState(pos);
+        Block block = state.getBlock();
+        return block.isTransparent(state, world, pos) && !(block instanceof FluidBlock);
+    }
+
+    private static BlockPos getBlockPos(PokemonEntity living, PlayerEntity player) {
+        BlockPos forwardPos = living.getBlockPos();
+        int width = (int) Math.floor(living.getWidth());
+        for (int i = 0; i < width; i++) {
+            forwardPos = switch (player.getMovementDirection()) {
+                case NORTH -> forwardPos.north();
+                case SOUTH -> forwardPos.south();
+                case EAST -> forwardPos.east();
+                case WEST -> forwardPos.west();
+                default -> forwardPos;
+            };
+        }
+        return forwardPos;
     }
 
 }
