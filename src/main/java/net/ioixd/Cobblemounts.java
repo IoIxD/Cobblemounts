@@ -65,9 +65,11 @@ public class Cobblemounts implements ModInitializer {
 
 						}
 						Item item = player.getMainHandStack().getItem();
-						player.startRiding(entity, false);
+						if (!item.getTranslationKey().contains("item.cobblemon")) {
+							player.startRiding(entity, false);
+							pkmnEntity.clearGoalsAndTasks();
+						}
 
-						pkmnEntity.clearGoalsAndTasks();
 					}
 				}
 			}
