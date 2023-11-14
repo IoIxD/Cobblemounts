@@ -2,20 +2,16 @@ package net.ioixd;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class PlayerJump implements ServerPlayNetworking.PlayChannelHandler {
+public class PlayerJump implements NetworkManager.NetworkReceiver {
     @Override
-    public void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
-            PacketByteBuf buf, PacketSender responseSender) {
+    public void receive(PacketByteBuf packetByteBuf, NetworkManager.PacketContext packetContext) {
+        var player = packetContext.getPlayer();
         Entity vehicle = player.getVehicle();
         if (vehicle != null) {
             if (vehicle.isOnGround()) {
@@ -32,9 +28,7 @@ public class PlayerJump implements ServerPlayNetworking.PlayChannelHandler {
                     }
                     living.velocityDirty = true;
                 }
-
             }
-
         }
     }
 }

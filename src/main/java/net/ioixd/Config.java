@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.moandjiezana.toml.Toml;
-
-import net.fabricmc.loader.api.FabricLoader;
+import dev.architectury.platform.Platform;
 
 public class Config {
 
@@ -40,7 +39,7 @@ public class Config {
 
     public void update() throws Exception {
         // Get the file or unzip the default.
-        Path configDir = Paths.get(FabricLoader.getInstance().getConfigDir().toString(), "cobblemounts.toml");
+        Path configDir = Paths.get(Platform.getConfigFolder().toString(), "cobblemounts.toml");
 
         FileReader ok;
         try {

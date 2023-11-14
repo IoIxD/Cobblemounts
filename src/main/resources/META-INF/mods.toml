@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "LGPL-3"
+
+[[mods]]
+modId = "cobblemounts"
+version = "1.1.2"
+displayName = "CobbleMounts"
+description = '''
+Mod that allows one to mount Cobblemon that they own.
+'''
+
+[[dependencies.cobblemounts]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1]"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.cobblemounts]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.cobblemounts]]
+modId = "cobblemon"
+mandatory = true
+versionRange = "[1.4.0,)"
+ordering = "NONE"
+side = "BOTH"

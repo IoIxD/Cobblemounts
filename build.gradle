@@ -11,8 +11,9 @@ buildscript {
 
 
 plugins {
-	id 'fabric-loom' version '1.4-SNAPSHOT'
-	id 'maven-publish'
+	id("java")
+	id("dev.architectury.loom") version("1.2-SNAPSHOT")
+	id("architectury-plugin") version("3.4-SNAPSHOT")
 	id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -37,41 +38,46 @@ repositories {
 		url 'https://oss.sonatype.org/content/repositories/snapshots'
 	}
 
+    maven { url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+
+    maven { url = 'https://maven.impactdev.net/repository/development/' }
+
+    maven { url = 'https://hub.spigotmc.org/nexus/content/groups/public/' }
+
+    maven { url = 'https://thedarkcolour.github.io/KotlinForForge/' }
+
+	maven { url "https://maven.architectury.dev/" }
 }
 
 loom {
-    splitEnvironmentSourceSets()
-
-	mods {
-		"cobblemon-sizechanger" {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
-		}
+	forge {
+		mixinConfig("cobblemounts.mixins.json")
 	}
-
 }
 
 dependencies {
 	// Minecraft shit
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Required mod shit
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation('me.lucko:fabric-permissions-api:0.2-SNAPSHOT')
-	modImplementation("curse.maven:cobblemon-687131:${project.cobblemon_curse_file_id}")
-	compileOnly 'net.luckperms:api:5.4'
-	modImplementation("curse.maven:architectury-api-419699:4555749")
+    forge "net.minecraftforge:forge:1.20.1-47.2.1"
 
-	include(implementation('com.moandjiezana.toml:toml4j:0.7.2'))
+    modImplementation "com.cobblemon:forge:1.4.0+1.20.1-SNAPSHOT"
+    runtimeOnly "thedarkcolour:kotlinforforge:4.5.0"
+
+	compileOnly 'net.luckperms:api:5.4'
+	modApi "dev.architectury:architectury-forge:9.1.12"
+
+	include 'com.moandjiezana.toml:toml4j:0.7.2'
+	modImplementation 'com.moandjiezana.toml:toml4j:0.7.2'
 }
 
 
 processResources {
 	inputs.property "version", project.version
 
-	filesMatching("fabric.mod.json") {
+	filesMatching("mods.toml") {
 		expand "version": project.version
 	}
 }
@@ -94,18 +100,18 @@ jar {
 }
 
 // configure the maven publication
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
-
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
-	}
-}
+//publishing {
+//	publications {
+//		mavenJava(MavenPublication) {
+//			from components.java
+//		}
+//	}
+//
+//	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+//	repositories {
+//		// Add repositories to publish to here.
+//		// Notice: This block does NOT have the same function as the block in the top level.
+//		// The repositories here will be used for publishing your artifact, not for
+//		// retrieving dependencies.
+//	}
+//}
