@@ -35,6 +35,7 @@ public abstract class PokemonServersideTickMixin extends LivingEntity {
         var pokemonData = pokemon.getPokemon();
         if (!(this.getFirstPassenger() instanceof PlayerEntity))
             return;
+        pokemon.fallDistance = 0;
         var mount = (MountIsMoving) (Object) this;
         Block water = pokemon.getBlockStateAtPos().getBlock();
         boolean inLiquid = water instanceof FluidBlock;

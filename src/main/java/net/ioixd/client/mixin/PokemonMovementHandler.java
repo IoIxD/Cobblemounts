@@ -1,10 +1,10 @@
-package net.ioixd.mixin;
+package net.ioixd.client.mixin;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonBehaviourFlag;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 
-import net.ioixd.CobblemountsClient;
+import net.ioixd.client.CobblemountsClient;
 import net.ioixd.MountIsMoving;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;

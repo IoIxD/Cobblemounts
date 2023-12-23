@@ -44,14 +44,6 @@ repositories {
 }
 
 loom {
-    splitEnvironmentSourceSets()
-
-	mods {
-		"cobblemon-sizechanger" {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
-		}
-	}
 
 }
 

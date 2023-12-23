@@ -1,11 +1,12 @@
-package net.ioixd;
+package net.ioixd.client;
 
 import net.fabricmc.api.ClientModInitializer;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
+import net.ioixd.Cobblemounts;
+import net.ioixd.Config;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

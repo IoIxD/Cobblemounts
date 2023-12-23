@@ -1,4 +1,4 @@
-package net.ioixd.mixin;
+package net.ioixd.client.mixin;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonBehaviourFlag;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
@@ -25,7 +25,6 @@ public class PokemonUpdateTick {
                 return;
             }
 
-            pokemonEntity.fallDistance = 0;
             pokemonEntity.setAiDisabled(true);
             Pokemon pokemonData = pokemonEntity.getPokemon();
             Entity firstPassenger = pokemonEntity.getFirstPassenger();

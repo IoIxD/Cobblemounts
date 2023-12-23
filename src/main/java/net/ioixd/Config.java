@@ -61,7 +61,7 @@ public class Config implements FabricPacket {
         BLACKLIST
     }
 
-    Config() {
+    public Config() {
         try {
             this.update();
         } catch (Exception e) {

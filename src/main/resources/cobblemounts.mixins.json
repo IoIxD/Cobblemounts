@@ -6,13 +6,9 @@
     "MobEntityMixin",
     "PokemonMixin",
     "PokemonServerDelegateMixin",
-    "PokemonServersideTickMixin"
+    "PokemonServersideTickMixin",
+    "ServerPlayNetworkHandlerMixin"
   ],
-  "client": [
-    "PokemonMovementHandler",
-    "PokemonUpdateTick"
-  ],
-
   "injectors": {
     "defaultRequire": 1
 	}
