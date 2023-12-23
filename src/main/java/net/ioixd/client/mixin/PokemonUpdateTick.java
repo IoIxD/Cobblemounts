@@ -4,6 +4,7 @@ import com.cobblemon.mod.common.entity.pokemon.PokemonBehaviourFlag;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import net.ioixd.Cobblemounts;
+import net.ioixd.client.CobblemountsClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
@@ -31,13 +32,11 @@ public class PokemonUpdateTick {
             if (firstPassenger instanceof PlayerEntity player) {
                 // Make the Pokemon's position match the player's and set their position
                 // accordingly.
-//                accordinglypokemonEntity.bodyYaw = player.getYaw();
-//                pokemonEntity.headYaw = player.getYaw();
-                float speedModifier = pokemonData.isLegendary() ? 0.0f : (float) Cobblemounts.CONFIG.legendaryModifier;
+                float speedModifier = pokemonData.isLegendary() ? 0.0f : (float) CobblemountsClient.SYNCED_CONFIG.legendaryModifier;
                 float movementSpeed = player.getMovementSpeed() * (pokemonData.getSpeed() / 12.0f) + speedModifier;
-                if (Cobblemounts.CONFIG.cappedSpeed) {
-                    if (movementSpeed >= Cobblemounts.CONFIG.speedCap) {
-                        movementSpeed = (float) Cobblemounts.CONFIG.speedCap;
+                if (CobblemountsClient.SYNCED_CONFIG.cappedSpeed) {
+                    if (movementSpeed >= CobblemountsClient.SYNCED_CONFIG.speedCap) {
+                        movementSpeed = (float) CobblemountsClient.SYNCED_CONFIG.speedCap;
                     }
                 }
                 pokemonEntity.limbAnimator.setSpeed(pokemonEntity.getMovementSpeed() / 1.3f);
@@ -45,21 +44,6 @@ public class PokemonUpdateTick {
                 pokemonEntity.setMovementSpeed(movementSpeed);
                 pokemonEntity.setForwardSpeed(0);
                 pokemonEntity.setPitch(pokemonEntity.getPitch());
-
-                if (Cobblemounts.CONFIG.allowFlying) {
-                    // If they're a flying type, set whether they have gravity or not.
-                    pokemonData.getTypes().forEach(ty -> {
-                        if (ty.getName().equals("flying")) {
-                            pokemonEntity.setNoGravity(!pokemonEntity.isOnGround());
-                            if (pokemonEntity.isOnGround() && pokemonEntity.getPose() == EntityPose.FALL_FLYING) {
-                                pokemonEntity.setPose(EntityPose.STANDING);
-                                pokemonEntity.setBehaviourFlag(PokemonBehaviourFlag.FLYING, false);
-                                pokemonEntity.updateVelocity(1.0f,
-                                        player.getRotationVector());
-                            }
-                        }
-                    });
-                }
 
             }
         } else {

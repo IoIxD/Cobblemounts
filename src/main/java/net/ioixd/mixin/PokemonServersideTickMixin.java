@@ -5,6 +5,7 @@ import com.cobblemon.mod.common.entity.pokemon.PokemonBehaviourFlag;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import net.ioixd.Cobblemounts;
 import net.ioixd.MountIsMoving;
+import net.ioixd.client.CobblemountsClient;
 import net.minecraft.block.Block;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.entity.EntityPose;
@@ -12,12 +13,15 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Optional;
 
 /*
 serverside logic here
@@ -32,6 +36,7 @@ public abstract class PokemonServersideTickMixin extends LivingEntity {
     @Inject(method = "tick",at = @At("TAIL"))
     protected void tick(CallbackInfo ci) {
         var pokemon = (PokemonEntity) (Object) this;
+        var envcfg = pokemon.getWorld() instanceof ServerWorld ? Cobblemounts.CONFIG : CobblemountsClient.SYNCED_CONFIG;
         var pokemonData = pokemon.getPokemon();
         if (!(this.getFirstPassenger() instanceof PlayerEntity))
             return;
@@ -40,9 +45,13 @@ public abstract class PokemonServersideTickMixin extends LivingEntity {
         Block water = pokemon.getBlockStateAtPos().getBlock();
         boolean inLiquid = water instanceof FluidBlock;
         mount.mount_setMoving(this.getFirstPassenger().getVelocity().multiply(1, 0, 1).length() > 0.01);
-        Vec3d finalMovement = pokemon.getFirstPassenger().getVelocity().multiply(1, 0, 1);
+        var pokemonName = pokemonData.getSpecies().getName().toLowerCase();
         pokemonData.getTypes().forEach(ty -> {
-            switch (ty.getName()) {
+            var name = ty.getName();
+            if(envcfg.alsoFlyList.contains(pokemonName)){
+                name = "flying";
+            }
+            switch (name) {
                 case "water":
                 case "flying":
                     boolean condition;
@@ -50,7 +59,7 @@ public abstract class PokemonServersideTickMixin extends LivingEntity {
                     boolean flying;
                     switch (ty.getName()) {
                         case "water":
-                            if (!Cobblemounts.CONFIG.allowSwimming) {
+                            if (!envcfg.allowSwimming) {
                                 return;
                             }
                             condition = inLiquid;
@@ -58,7 +67,7 @@ public abstract class PokemonServersideTickMixin extends LivingEntity {
                             flying = false;
                             break;
                         case "flying":
-                            if (!Cobblemounts.CONFIG.allowSwimming) {
+                            if (!envcfg.allowSwimming) {
                                 return;
                             }
                             condition = !pokemon.isOnGround() && !inLiquid;
@@ -75,8 +84,6 @@ public abstract class PokemonServersideTickMixin extends LivingEntity {
                     }
                     ;
                     if (condition) {
-                        if (finalMovement.length() != 0.0) {
-                        }
                         if (flying) {
                             pokemon.setBehaviourFlag(PokemonBehaviourFlag.FLYING, true);
                         }
@@ -87,5 +94,21 @@ public abstract class PokemonServersideTickMixin extends LivingEntity {
                     break;
             }
         });
+        if (envcfg.allowFlying) {
+            pokemonData.getTypes().forEach(ty -> {
+                var name = ty.getName();
+                if(envcfg.alsoFlyList.contains(pokemonName)){
+                    name = "flying";
+                }
+                if (name.equals("flying")) {
+                    pokemon.setNoGravity(!pokemon.isOnGround());
+                    if (pokemon.isOnGround() && pokemon.getPose() == EntityPose.FALL_FLYING) {
+                        pokemon.setPose(EntityPose.STANDING);
+                        pokemon.setBehaviourFlag(PokemonBehaviourFlag.FLYING, false);
+                        pokemon.updateVelocity(1.0f, pokemon.getFirstPassenger().getRotationVector());
+                    }
+                }
+            });
+        }
     }
 }

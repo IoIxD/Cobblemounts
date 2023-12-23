@@ -56,13 +56,10 @@ public abstract class PokemonMovementHandler extends LivingEntity {
         AtomicBoolean isFlying = new AtomicBoolean(false);
         Vec3d moveXZ = movement;//movement.rotateY((float) Math.toRadians(-player.getYaw()));
         Vec3d forward = player.getRotationVector().normalize().multiply(movement.z);
-        //forward = movement.multiply(0, 0, 1).rotateY((float) Math.toRadians(-player.getYaw()));
 
         Vec3d left = movement.multiply(1, 0, 0).rotateY((float) Math.toRadians(-player.getYaw()));
 
         Vec3d flyMove = forward.add(left);
-        Vec3d moveY = movement.multiply(0, 0, 0);
-
 
         double movementSpeed_ = (pokemonData.getSpeed() / 500.0f) + speedModifier;
         if (CobblemountsClient.SYNCED_CONFIG.cappedSpeed) {
@@ -71,8 +68,8 @@ public abstract class PokemonMovementHandler extends LivingEntity {
             }
         }
         double[] movementSpeed = new double[]{movementSpeed_};
-        var pokemonName = pokemonData.getSpecies().getName().toLowerCase();
         pokemonData.getTypes().forEach(ty -> {
+            var pokemonName = pokemonData.getSpecies().getName().toLowerCase();
             var name = ty.getName();
             if(CobblemountsClient.SYNCED_CONFIG.alsoFlyList.contains(pokemonName)){
                 name = "flying";
@@ -111,7 +108,6 @@ public abstract class PokemonMovementHandler extends LivingEntity {
                     ;
                     if (condition) {
                         if (flyMove.z != 0.0) {
-                            //pokemon.updateVelocity(movementSpeed, player.getRotationVector());
                             pokemon.move(MovementType.SELF, flyMove.multiply(movementSpeed[0]));
                             isFlying.set(true);
                         }
@@ -120,14 +116,13 @@ public abstract class PokemonMovementHandler extends LivingEntity {
                         }
                         pokemon.setPose(animation);
                     } else {
-                        //pokemon.updateVelocity(0.0f, moveXZ);
                         pokemon.setPose(EntityPose.STANDING);
                     }
                     break;
             }
         });
         if (!isFlying.get()) {
-            if (!(player instanceof ServerPlayerEntity) && MinecraftClient.getInstance().options.jumpKey.wasPressed() && pokemon.isOnGround()) {
+            if (!(player instanceof ServerPlayerEntity) && MinecraftClient.getInstance().options.jumpKey.isPressed() && pokemon.isOnGround()) {
                 pokemon.addVelocity(0, 0.7, 0);
             }
             pokemon.travel(moveXZ);
