@@ -1,38 +1,39 @@
 package net.ioixd;
 
+import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import static net.minecraft.server.command.CommandManager.*;
-
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.Item;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Box;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class Cobblemounts implements ModInitializer {
-	public static final String MOD_ID = "Cobblemounts";
+	public static final String MOD_ID = "cobblemounts";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-
+	public static final Identifier CONFIG_SYNC_ID = new Identifier(MOD_ID,"sync");
 	public static final Config CONFIG = new Config();
-
 	@Override
 	public void onInitialize() {
-
+		ServerPlayConnectionEvents.JOIN.register((networkHandler,packetSender,server)->{
+			ServerPlayNetworking.send(networkHandler.player,CONFIG);
+		});
 		CommandRegistrationCallback.EVENT
 				.register((dispatcher, registryAccess, environment) -> dispatcher.register(literal("cobblemounts")
 						.then(literal("reload")
 								.executes(context -> {
 									try {
 										Cobblemounts.CONFIG.update();
+										context.getSource().getServer().getPlayerManager().getPlayerList()
+												.forEach(p-> ServerPlayNetworking.send(p,CONFIG));
 										context.getSource().sendMessage(Text.literal("Reloaded configuration file."));
 									} catch (Exception ex) {
 										context.getSource().sendMessage(Text.literal(ex.getMessage()));
@@ -75,7 +76,5 @@ public class Cobblemounts implements ModInitializer {
 			}
 			return ActionResult.PASS;
 		});
-		ServerPlayNetworking.registerGlobalReceiver(new Identifier("cobblemounts:player_jumped"), new PlayerJump());
-		ServerPlayNetworking.registerGlobalReceiver(new Identifier("cobblemounts:player_crouched"), new PlayerCrouch());
 	}
 }

@@ -19,11 +19,12 @@
 			"net.ioixd.Cobblemounts"
 		],
 		"client": [
-			"net.ioixd.CobblemountsClient"
+			"net.ioixd.client.CobblemountsClient"
 		]
 	},
 	"mixins": [
-		"cobblemounts.mixins.json"
+		"cobblemounts.mixins.json",
+		"cobblemounts.client.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.14.22",

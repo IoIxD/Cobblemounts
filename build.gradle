@@ -14,6 +14,8 @@ plugins {
 	id 'fabric-loom' version '1.4-SNAPSHOT'
 	id 'maven-publish'
 	id("com.github.johnrengelman.shadow") version "8.1.1"
+	id("org.jetbrains.kotlin.jvm") version "1.8.10"
+
 }
 
 version = project.mod_version
@@ -31,7 +33,9 @@ repositories {
 			includeGroup("curse.maven")
 		}
 	}
-
+	maven {
+		url = "https://maven.impactdev.net/repository/development/"
+	}
 	maven {
 		name 'Fabric Permission API'
 		url 'https://oss.sonatype.org/content/repositories/snapshots'
@@ -40,14 +44,6 @@ repositories {
 }
 
 loom {
-    splitEnvironmentSourceSets()
-
-	mods {
-		"cobblemon-sizechanger" {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
-		}
-	}
 
 }
 
@@ -60,8 +56,9 @@ dependencies {
 	// Required mod shit
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation('me.lucko:fabric-permissions-api:0.2-SNAPSHOT')
-	modImplementation("curse.maven:cobblemon-687131:${project.cobblemon_curse_file_id}")
-	compileOnly 'net.luckperms:api:5.4'
+	modImplementation("com.cobblemon:fabric:1.4.0+1.20.1")
+	modCompileOnly 'net.luckperms:api:5.4'
+	
 	modImplementation("curse.maven:architectury-api-419699:4555749")
 
 	include(implementation('com.moandjiezana.toml:toml4j:0.7.2'))

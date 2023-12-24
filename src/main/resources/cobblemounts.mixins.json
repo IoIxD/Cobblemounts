@@ -1,12 +1,15 @@
 {
-	"required": true,
-	"package": "net.ioixd.mixin",
-	"compatibilityLevel": "JAVA_17",
-	"mixins": [
-		"PokemonUpdateTick",
-		"PokemonMovementHandler"
-	],
-	"injectors": {
-		"defaultRequire": 1
+  "required": true,
+  "package": "net.ioixd.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "MobEntityMixin",
+    "PokemonMixin",
+    "PokemonServerDelegateMixin",
+    "PokemonServersideTickMixin",
+    "ServerPlayNetworkHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
 	}
 }
