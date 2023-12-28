@@ -1,6 +1,6 @@
 cappedSpeed = true
-speedCap = 0.5
-flyingSpeedMul = 2.0     # Also applies to swimming Pokemon.
+speedCap = 0.4
+flyingSpeedCap = 3.0     # Also applies to swimming Pokemon.
 legendaryModifier = 0.05 # Legendaries get an additive boost to their speed (this is capped by the speed cap)
 allowFlying = true
 allowSwimming = true

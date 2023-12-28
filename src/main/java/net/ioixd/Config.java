@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.moandjiezana.toml.Toml;
 import net.fabricmc.fabric.api.networking.v1.FabricPacket;
@@ -17,7 +16,7 @@ public class Config implements FabricPacket {
 
     public boolean cappedSpeed = true;
     public double speedCap = 0.15;
-    public double flyingSpeedMul = 2.0;
+    public double flyingSpeedCap = 0.15;
     public double legendaryModifier = 0.05;
 
     public boolean allowFlying = true;
@@ -33,7 +32,7 @@ public class Config implements FabricPacket {
         p.writeBoolean(cappedSpeed);
         p.writeDouble(speedCap);
         p.writeDouble(legendaryModifier);
-        p.writeDouble(flyingSpeedMul);
+        p.writeDouble(flyingSpeedCap);
         p.writeBoolean(allowFlying);
         p.writeBoolean(allowSwimming);
         p.writeEnumConstant(listUse);
@@ -113,7 +112,7 @@ public class Config implements FabricPacket {
         this.cappedSpeed = toml.getBoolean("cappedSpeed", true);
         this.speedCap = toml.getDouble("speedCap", 0.15);
         this.legendaryModifier = toml.getDouble("legenedaryModifier", 0.05);
-        this.flyingSpeedMul = toml.getDouble("flyingSpeedMul", 2.0);
+        this.flyingSpeedCap = toml.getDouble("flyingSpeedCap", 0.15);
         this.allowFlying = toml.getBoolean("allowFlying", true);
         this.allowSwimming = toml.getBoolean("allowSwimming", true);
         String listUse = toml.getString("listUse", "").toLowerCase();
@@ -134,12 +133,6 @@ public class Config implements FabricPacket {
         this.alsoFlyList = toml.getList("alsoFlying", new ArrayList<String>()).stream().map(f -> {
             return f.toLowerCase();
         }).toList();
-
-        double flyingSpeedCap = toml.getDouble("flyingSpeedCap", 0.0);
-        if (flyingSpeedCap != 0.0) {
-            Logger.getGlobal().warning(
-                    "flyingSpeedCap is no longer a valid key. It is replaced with flyingSpeedMul, and it acts as a multiplier for flying/swimming Pokemon's speed in the air.");
-        }
     }
 
     public static Config read(PacketByteBuf p) {
@@ -147,7 +140,7 @@ public class Config implements FabricPacket {
         config.cappedSpeed = p.readBoolean();
         config.speedCap = p.readDouble();
         config.legendaryModifier = p.readDouble();
-        config.flyingSpeedMul = p.readDouble();
+        config.flyingSpeedCap = p.readDouble();
         config.allowFlying = p.readBoolean();
         config.allowSwimming = p.readBoolean();
         config.listUse = p.readEnumConstant(ListUse.class);

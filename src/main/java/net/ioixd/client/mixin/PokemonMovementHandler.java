@@ -52,6 +52,8 @@ public abstract class PokemonMovementHandler extends LivingEntity {
         Block water = pokemon.getBlockStateAtPos().getBlock();
         boolean inLiquid = water instanceof FluidBlock;
 
+        float speedModifier = pokemonData.isLegendary() ? 0.0f
+                : (float) CobblemountsClient.SYNCED_CONFIG.legendaryModifier;
         AtomicBoolean isFlying = new AtomicBoolean(false);
         Vec3d moveXZ = movement;// movement.rotateY((float) Math.toRadians(-player.getYaw()));
         Vec3d forward = player.getRotationVector().normalize().multiply(movement.z);
@@ -100,9 +102,13 @@ public abstract class PokemonMovementHandler extends LivingEntity {
                     ;
                     if (condition) {
                         if (flyMove.z != 0.0) {
-
-                            pokemon.move(MovementType.SELF,
-                                    flyMove.multiply(CobblemountsClient.SYNCED_CONFIG.flyingSpeedMul));
+                            double flyingSpeed = ((pokemonData.getSpeed() / 64.0f) + speedModifier) * 8.0;
+                            if (CobblemountsClient.SYNCED_CONFIG.cappedSpeed) {
+                                if (flyingSpeed >= CobblemountsClient.SYNCED_CONFIG.flyingSpeedCap) {
+                                    flyingSpeed = CobblemountsClient.SYNCED_CONFIG.flyingSpeedCap;
+                                }
+                            }
+                            pokemon.move(MovementType.SELF, flyMove.multiply(flyingSpeed));
                             isFlying.set(true);
                         }
                         if (flying) {
