@@ -32,7 +32,8 @@ public class PokemonUpdateTick {
             if (firstPassenger instanceof PlayerEntity player) {
                 // Make the Pokemon's position match the player's and set their position
                 // accordingly.
-                float speedModifier = pokemonData.isLegendary() ? 0.0f : (float) CobblemountsClient.SYNCED_CONFIG.legendaryModifier;
+                float speedModifier = pokemonData.isLegendary() ? 0.0f
+                        : (float) CobblemountsClient.SYNCED_CONFIG.legendaryModifier;
                 float movementSpeed = player.getMovementSpeed() * (pokemonData.getSpeed() / 12.0f) + speedModifier;
                 if (CobblemountsClient.SYNCED_CONFIG.cappedSpeed) {
                     if (movementSpeed >= CobblemountsClient.SYNCED_CONFIG.speedCap) {

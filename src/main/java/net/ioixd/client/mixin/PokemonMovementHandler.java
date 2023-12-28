@@ -26,7 +26,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Mixin(PokemonEntity.class)
 public abstract class PokemonMovementHandler extends LivingEntity {
-    @Shadow public abstract void playAmbientSound();
+    @Shadow
+    public abstract void playAmbientSound();
 
     int ticksInLiquid = 0;
 
@@ -35,14 +36,13 @@ public abstract class PokemonMovementHandler extends LivingEntity {
     }
 
     protected void tickControlled(PlayerEntity player, Vec3d movement) {
-        //PlayerEntity player = (PlayerEntity) (Object) this;
-        //Entity entity = player.getVehicle();
+        // PlayerEntity player = (PlayerEntity) (Object) this;
+        // Entity entity = player.getVehicle();
         var pokemon = (PokemonEntity) (Object) this;
-        //if (entity == null) return;
-        //if (!(entity instanceof PokemonEntity pokemon)) return;
+        // if (entity == null) return;
+        // if (!(entity instanceof PokemonEntity pokemon)) return;
 
-
-        movement = new Vec3d(player.sidewaysSpeed,0,player.forwardSpeed);
+        movement = new Vec3d(player.sidewaysSpeed, 0, player.forwardSpeed);
         World world = pokemon.getWorld();
         Pokemon pokemonData = pokemon.getPokemon();
         pokemon.setYaw(player.getYaw());
@@ -52,26 +52,18 @@ public abstract class PokemonMovementHandler extends LivingEntity {
         Block water = pokemon.getBlockStateAtPos().getBlock();
         boolean inLiquid = water instanceof FluidBlock;
 
-        float speedModifier = pokemonData.isLegendary() ? 0.0f : (float) CobblemountsClient.SYNCED_CONFIG.legendaryModifier;
         AtomicBoolean isFlying = new AtomicBoolean(false);
-        Vec3d moveXZ = movement;//movement.rotateY((float) Math.toRadians(-player.getYaw()));
+        Vec3d moveXZ = movement;// movement.rotateY((float) Math.toRadians(-player.getYaw()));
         Vec3d forward = player.getRotationVector().normalize().multiply(movement.z);
 
         Vec3d left = movement.multiply(1, 0, 0).rotateY((float) Math.toRadians(-player.getYaw()));
 
         Vec3d flyMove = forward.add(left);
 
-        double movementSpeed_ = (pokemonData.getSpeed() / 500.0f) + speedModifier;
-        if (CobblemountsClient.SYNCED_CONFIG.cappedSpeed) {
-            if (movementSpeed_ >= CobblemountsClient.SYNCED_CONFIG.flyingSpeedCap) {
-                movementSpeed_ = CobblemountsClient.SYNCED_CONFIG.flyingSpeedCap;
-            }
-        }
-        double[] movementSpeed = new double[]{movementSpeed_};
         pokemonData.getTypes().forEach(ty -> {
             var pokemonName = pokemonData.getSpecies().getName().toLowerCase();
             var name = ty.getName();
-            if(CobblemountsClient.SYNCED_CONFIG.alsoFlyList.contains(pokemonName)){
+            if (CobblemountsClient.SYNCED_CONFIG.alsoFlyList.contains(pokemonName)) {
                 name = "flying";
             }
             switch (name) {
@@ -108,7 +100,9 @@ public abstract class PokemonMovementHandler extends LivingEntity {
                     ;
                     if (condition) {
                         if (flyMove.z != 0.0) {
-                            pokemon.move(MovementType.SELF, flyMove.multiply(movementSpeed[0]));
+
+                            pokemon.move(MovementType.SELF,
+                                    flyMove.multiply(CobblemountsClient.SYNCED_CONFIG.flyingSpeedMul));
                             isFlying.set(true);
                         }
                         if (flying) {
@@ -122,7 +116,8 @@ public abstract class PokemonMovementHandler extends LivingEntity {
             }
         });
         if (!isFlying.get()) {
-            if (!(player instanceof ServerPlayerEntity) && MinecraftClient.getInstance().options.jumpKey.isPressed() && pokemon.isOnGround()) {
+            if (!(player instanceof ServerPlayerEntity) && MinecraftClient.getInstance().options.jumpKey.isPressed()
+                    && pokemon.isOnGround()) {
                 pokemon.addVelocity(0, 0.7, 0);
             }
             pokemon.travel(moveXZ);
@@ -139,11 +134,13 @@ public abstract class PokemonMovementHandler extends LivingEntity {
             }
         }
     }
+
     private static boolean isBlockPosTransparent(BlockPos pos, World world) {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         return block.isTransparent(state, world, pos) && !(block instanceof FluidBlock);
     }
+
     private static BlockPos getBlockPos(PokemonEntity living, PlayerEntity player) {
         BlockPos forwardPos = living.getBlockPos();
         int width = (int) Math.floor(living.getWidth());
