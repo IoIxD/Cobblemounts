@@ -1,0 +1,9 @@
+cappedSpeed = true
+speedCap = 0.5
+flyingSpeedCap = 0.15    # Also applies to swimming Pokemon.
+legendaryModifier = 0.05 # Legendaries get an additive boost to their speed (this is capped by the speed cap)
+allowFlying = true
+allowSwimming = true
+list = []                # Which Pokemon you can or can't mount.
+alsoFlying = []          # Which Pokemons can fly, ignoring its types
+listUse = ""             # Set to "blacklist" or "whitelist" to control the behavior of the below list. If it is an invalid option or blank, the option isn't used.
