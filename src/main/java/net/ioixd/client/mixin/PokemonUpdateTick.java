@@ -30,11 +30,73 @@ public class PokemonUpdateTick {
             Pokemon pokemonData = pokemonEntity.getPokemon();
             Entity firstPassenger = pokemonEntity.getFirstPassenger();
             if (firstPassenger instanceof PlayerEntity player) {
+                
                 // Make the Pokemon's position match the player's and set their position
                 // accordingly.
-                float speedModifier = pokemonData.isLegendary() ? 0.0f
-                        : (float) CobblemountsClient.SYNCED_CONFIG.legendaryModifier;
-                float movementSpeed = player.getMovementSpeed() * (pokemonData.getSpeed() / 12.0f) + speedModifier;
+                float legendaryModifier = pokemonData.isLegendary() ? 0.0f
+                    : (float) CobblemountsClient.SYNCED_CONFIG.legendaryModifier;
+                boolean isLegendary = pokemonData.isLegendary();
+                //float movementSpeed = player.getMovementSpeed() * (pokemonData.getSpeed() / 12.0f) + speedModifier;
+                float speedScalar = CobblemountsClient.SYNCED_CONFIG.speedScalar;
+                float speedCap = CobblemountsClient.SYNCED_CONFIG.speedCap;
+                boolean isSpeedCapped = CobblemountsClient.SYNCED_CONFIG.cappedSpeed;
+                boolean useLogScaling = CobblemountsClient.SYNCED_CONFIG.useLogScaling;
+                
+                if (!useLogScaling) {
+                    float movementSpeed = player.getMovementSpeed() * ((pokemonData.getSpeed() / 12.0f) * (speedScalar / 2.0f));
+                    if (isLegendary) {
+                        if (isSpeedCapped) {
+                            if (CobblemountsClient.SYNCED_CONFIG.legendaryModifierCapBreak) {
+                                if (movementSpeed >= speedCap) {
+                                    movementSpeed = (speedCap + ((legendaryModifier * speedScalar) / 2.0f));
+                                } else {
+                                    movementSpeed = (movementSpeed + ((legendaryModifier * speedScalar) / 2.0f));
+                                }
+                            } else {
+                                movementSpeed = (movementSpeed + ((legendaryModifier * speedScalar) / 2.0f));
+                                if (movementSpeed >= speedCap) {
+                                    movementSpeed = speedCap;
+                                }
+                            }
+                        } else {
+                            movementSpeed = (movementSpeed + ((legendaryModifier * speedScalar) / 2.0f));
+                        }
+                    } else {
+                        if (isSpeedCapped) {
+                            if (movementSpeed >= speedCap) {
+                                movementSpeed = speedCap;
+                            }
+                        }
+                    }
+                } else {
+                    float movementSpeed = player.getMovementSpeed() * ((log(pokemonData.getSpeed() + speedScalar) / speedScalar) / 5.0f);
+                    if (isLegendary) {
+                        if (isSpeedCapped) {
+                            if (CobblemountsClient.SYNCED_CONFIG.legendaryModifierCapBreak) {
+                                if (movementSpeed >= speedCap) {
+                                    movementSpeed = (speedCap + legendaryModifier);
+                                } else {
+                                    movementSpeed = (movementSpeed + legendaryModifier);
+                                }
+                            } else {
+                                movementSpeed = (movementSpeed + legendaryModifier);
+                                if (movementSpeed >= speedCap) {
+                                    movementSpeed = speedCap;
+                                }
+                            }
+                        } else {
+                            movementSpeed = (movementSpeed + legendaryModifier);
+                        }
+                    } else {
+                        if (isSpeedCapped) {
+                            if (movementSpeed >= speedCap) {
+                                movementSpeed = speedCap;
+                            }
+                        }
+                    }
+
+                }
+                
                 if (CobblemountsClient.SYNCED_CONFIG.cappedSpeed) {
                     if (movementSpeed >= CobblemountsClient.SYNCED_CONFIG.speedCap) {
                         movementSpeed = (float) CobblemountsClient.SYNCED_CONFIG.speedCap;

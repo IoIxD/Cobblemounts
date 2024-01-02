@@ -1,9 +1,40 @@
+# useLogScaling = false : 
+# movement speed = ((pkmn speed / 256) * (scalar / 2)) + ((legendaryModifier * scalar) / 2)
+# useLogScaling = true :
+# movement speed = log((pkmn speed + scalar) / scalar) + legendaryModifier
+# For LINEAR scaling, a HIGHER scalar means MORE speed
+# LINEAR scaling means that every point of speed matters as much as every other
+# For LOGARITHMIC scaling, a HIGHER scalar means LESS speed
+# LOGARITHMIC scaling means that movement speed grows faster with low speed stats but slower with more speed stats
+# Basically : 
+# Linear : low investment, low rewards. medium investment, medium rewards. high investment, high reward.
+# Logarithmic : low investment, low-medium reward. medium investment, medium-high reward. high investment, medium-high rewards.
+# If unsure... leave those settings default. If you want to tinker with balance... here's a link to the graph compairing
+# the two modes of scaling for my math nerds : https://www.desmos.com/calculator/ccxdf7ll24
+
 cappedSpeed = true
-speedCap = 0.4
-flyingSpeedCap = 3.0     # Also applies to swimming Pokemon.
-legendaryModifier = 0.05 # Legendaries get an additive boost to their speed (this is capped by the speed cap)
+useLogScaling = false
+speedScalar = 4.0
+speedCap = 3.0
+
+flightCappedSpeed = true
+flightUseLogScaling = true
+flightSpeedScalar = 50.0
+flightSpeedCap = 2.0 
+
+swimCappedSpeed = true
+swimUseLogScaling = true
+swimSpeedScalar = 5.5
+swimSpeedCap = 4.0
+
+# Legendaries get a speed boost accounted for in the formula.
+# You may chose to let it bypass the speed caps.
+legendaryModifier = 0.5
+legendaryModifierCapBreak = true
+#
 allowFlying = true
 allowSwimming = true
+
 list = []                # Which Pokemon you can or can't mount.
 alsoFlying = []          # Which Pokemons can fly, ignoring its types
 listUse = ""             # Set to "blacklist" or "whitelist" to control the behavior of the below list. If it is an invalid option or blank, the option isn't used.
