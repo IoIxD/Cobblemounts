@@ -54,6 +54,7 @@ public abstract class PokemonMovementHandler extends LivingEntity {
 
         float speedModifier = pokemonData.isLegendary() ? 0.0f
                 : (float) CobblemountsClient.SYNCED_CONFIG.legendaryModifier;
+        float speedScaling = (float) CobblemountsClient.SYNCED_CONFIG.speedScaling;
         AtomicBoolean isFlying = new AtomicBoolean(false);
         Vec3d moveXZ = movement;// movement.rotateY((float) Math.toRadians(-player.getYaw()));
         Vec3d forward = player.getRotationVector().normalize().multiply(movement.z);
@@ -102,7 +103,7 @@ public abstract class PokemonMovementHandler extends LivingEntity {
                     ;
                     if (condition) {
                         if (flyMove.z != 0.0) {
-                            double flyingSpeed = ((pokemonData.getSpeed() / 64.0f) + speedModifier) * 8.0;
+                            double flyingSpeed = ((pokemonData.getSpeed() / 64.0f) + speedModifier) * speedScaling;
                             if (CobblemountsClient.SYNCED_CONFIG.cappedSpeed) {
                                 if (flyingSpeed >= CobblemountsClient.SYNCED_CONFIG.flyingSpeedCap) {
                                     flyingSpeed = CobblemountsClient.SYNCED_CONFIG.flyingSpeedCap;
