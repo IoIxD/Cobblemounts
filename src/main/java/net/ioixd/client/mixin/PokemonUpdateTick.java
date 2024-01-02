@@ -37,13 +37,13 @@ public class PokemonUpdateTick {
                     : (float) CobblemountsClient.SYNCED_CONFIG.legendaryModifier;
                 boolean isLegendary = pokemonData.isLegendary();
                 //float movementSpeed = player.getMovementSpeed() * (pokemonData.getSpeed() / 12.0f) + speedModifier;
-                float speedScalar = CobblemountsClient.SYNCED_CONFIG.speedScalar;
-                float speedCap = CobblemountsClient.SYNCED_CONFIG.speedCap;
-                boolean isSpeedCapped = CobblemountsClient.SYNCED_CONFIG.cappedSpeed;
-                boolean useLogScaling = CobblemountsClient.SYNCED_CONFIG.useLogScaling;
-                
+                float speedScalar = (float) CobblemountsClient.SYNCED_CONFIG.groundSpeedScalar;
+                float speedCap = (float) CobblemountsClient.SYNCED_CONFIG.groundSpeedCap;
+                boolean isSpeedCapped = CobblemountsClient.SYNCED_CONFIG.groundCappedSpeed;
+                boolean useLogScaling = CobblemountsClient.SYNCED_CONFIG.groundUseLogScaling;
+                float movementSpeed = 0.0f;
                 if (!useLogScaling) {
-                    float movementSpeed = player.getMovementSpeed() * ((pokemonData.getSpeed() / 12.0f) * (speedScalar / 2.0f));
+                    movementSpeed = player.getMovementSpeed() * ((pokemonData.getSpeed() / 12.0f) * (speedScalar / 2.0f));
                     if (isLegendary) {
                         if (isSpeedCapped) {
                             if (CobblemountsClient.SYNCED_CONFIG.legendaryModifierCapBreak) {
@@ -69,7 +69,7 @@ public class PokemonUpdateTick {
                         }
                     }
                 } else {
-                    float movementSpeed = player.getMovementSpeed() * ((log(pokemonData.getSpeed() + speedScalar) / speedScalar) / 5.0f);
+                    movementSpeed = (player.getMovementSpeed() * ((float)Math.log((pokemonData.getSpeed() + speedScalar) / speedScalar))) / 5.0f;
                     if (isLegendary) {
                         if (isSpeedCapped) {
                             if (CobblemountsClient.SYNCED_CONFIG.legendaryModifierCapBreak) {
@@ -95,12 +95,6 @@ public class PokemonUpdateTick {
                         }
                     }
 
-                }
-                
-                if (CobblemountsClient.SYNCED_CONFIG.cappedSpeed) {
-                    if (movementSpeed >= CobblemountsClient.SYNCED_CONFIG.speedCap) {
-                        movementSpeed = (float) CobblemountsClient.SYNCED_CONFIG.speedCap;
-                    }
                 }
                 pokemonEntity.limbAnimator.setSpeed(pokemonEntity.getMovementSpeed() / 1.3f);
 

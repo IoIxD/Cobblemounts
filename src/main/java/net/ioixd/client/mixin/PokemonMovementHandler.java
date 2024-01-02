@@ -102,16 +102,16 @@ public abstract class PokemonMovementHandler extends LivingEntity {
                     if (condition) {
                         // Let the spaghetti begin. Now may be time to say that I have NEVER coded Java before :s
                         // First, decide between swimming or flying scalars
+                        float speedScalar = (float) CobblemountsClient.SYNCED_CONFIG.swimSpeedScalar;
+                        float speedCap = (float) CobblemountsClient.SYNCED_CONFIG.swimSpeedCap;
+                        boolean isSpeedCapped = CobblemountsClient.SYNCED_CONFIG.swimCappedSpeed;
+                        boolean useLogScaling = CobblemountsClient.SYNCED_CONFIG.swimUseLogScaling;
+                        
                         if (flying) {
-                            float speedScalar = CobblemountsClient.SYNCED_CONFIG.flightSpeedScalar;
-                            float speedCap = CobblemountsClient.SYNCED_CONFIG.flightSpeedCap;
-                            boolean isSpeedCapped = CobblemountsClient.SYNCED_CONFIG.flightCappedSpeed;
-                            boolean useLogScaling = CobblemountsClient.SYNCED_CONFIG.flightUseLogScaling;
-                        } else {
-                            float speedScalar = CobblemountsClient.SYNCED_CONFIG.swimSpeedScalar;
-                            float speedCap = CobblemountsClient.SYNCED_CONFIG.swimSpeedCap;
-                            boolean isSpeedCapped = CobblemountsClient.SYNCED_CONFIG.swimCappedSpeed;
-                            boolean useLogScaling = CobblemountsClient.SYNCED_CONFIG.swimUseLogScaling;
+                            speedScalar = (float) CobblemountsClient.SYNCED_CONFIG.flightSpeedScalar;
+                            speedCap = (float) CobblemountsClient.SYNCED_CONFIG.flightSpeedCap;
+                            isSpeedCapped = CobblemountsClient.SYNCED_CONFIG.flightCappedSpeed;
+                            useLogScaling = CobblemountsClient.SYNCED_CONFIG.flightUseLogScaling;
                         }
                         // Then, do some additional checks for legendaries
                         float legendaryModifier = pokemonData.isLegendary() ? 0.0f
@@ -121,11 +121,12 @@ public abstract class PokemonMovementHandler extends LivingEntity {
                         // Fun fact, in a previous itteration, I repeated this code twice with a check to see if we
                         // were opperating in swim mode or flight mode. I need coffee.
                         // elifelifelifelifelifelifelifelifelifelifelif...
+                        float flyingSpeed = 0.0f;
                         if (flyMove.z != 0.0) {
                             // Step 1 : check if using log or lin scaling
                             if (!useLogScaling) {
                                 // Step 2 : compute the base flight speed
-                                double flyingSpeed = ((pokemonData.getSpeed() / 256.0f) * (speedScalar / 2.0f));
+                                flyingSpeed = ((pokemonData.getSpeed() / 256.0f) * (speedScalar / 2.0f));
                                 // Step 3 : check if the cobblemon is legendary
                                  if (isLegendary) {
                                     // Step 3.1 : check if speed cap is applied
@@ -158,7 +159,7 @@ public abstract class PokemonMovementHandler extends LivingEntity {
                             } else {
                                 // We're not done yet ! We still need to do the SAME EXACT THING but for LOGARITHMIC SCALING !!!!!!
                                 // Step 2
-                                double flyingSpeed = (log(pokemonData.getSpeed() + speedScalar) / speedScalar);
+                                flyingSpeed = 2.5f * (float)Math.log((pokemonData.getSpeed() + speedScalar) / speedScalar);
                                 // Step 3
                                 if (isLegendary) {
                                     // Step 3.1
