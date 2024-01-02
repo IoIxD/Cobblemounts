@@ -13,33 +13,33 @@
 # the two modes of scaling for my math nerds : https://www.desmos.com/calculator/ccxdf7ll24
 
 # Ground speed isn't as versatile as flight, so it scales harder.
-# Ground speed 1 @ 75 spd
-# Ground speed 2 @ 180 spd
-# Ground speed 3 @ 350 spd
+# Ground speed .5 @ 100 spd
+# Ground speed 1 @ 250 spd
+# Ground speed 2 @ 600 spd
 groundCappedSpeed = true    # Linear default : true
-groundUseLogScaling = true  # Linear default : false
-groundSpeedScalar = 150.0   # Linear default : 170
-groundSpeedCap = 3.0        # Linear default : 0.4
+groundUseLogScaling = false # Linear default : false
+groundSpeedScalar = 0.75   # Linear default : 170
+groundSpeedCap = 2.0        # Linear default : 0.4
 
 # Flight is extremely versatile, so its capped at 2. Also, speed 1 is 
 # available relatively early for exploration, but speed 2 will require
 # a time investment in a speed 350 bird.
-# Flight speed 1 @ 150 spd
-# Flight speed 2 @ 350 spd
+# Flight speed 0.5 @ 100 spd
+# Flight speed 1 @ 200 spd
+# Flight speed 1.5 @ 350 spd
 flightCappedSpeed = true    # Linear default : true 
 flightUseLogScaling = true  # Linear default : false 
-flightSpeedScalar = 300.0   # Linear default : 64.0
-flightSpeedCap = 2.0        # Linear default : 3.0
+flightSpeedScalar = 450.0   # Linear default : 64.0
+flightSpeedCap = 1.75        # Linear default : 3.0
 
-# Simming is the most niche ability, so it's uncapped and scales the hardest.
-# Swim speed 1 @ 40 spd
-# Swim speed 2 @ 90 spd
-# Swim speed 3 @ 170 spd 
-# Swim speed 4 @ 300 spd 
+# Swimming is the most niche ability, so it's uncapped and scales the hardest.
+# Swim speed 1 @ 70 spd
+# Swim speed 2 @ 200 spd
+# Swim speed 3 @ 350 spd 
 swimCappedSpeed = false     # Linear default : true
 swimUseLogScaling = true    # Linear default : false
-swimSpeedScalar = 75.0      # Linear default : 64.0
-swimSpeedCap = 4.0          # Linear default : 3.0
+swimSpeedScalar = 300.0     # Linear default : 64.0
+swimSpeedCap = 3.0          # Linear default : 3.0
 
 # Legendaries get a speed boost accounted for in the formula.
 # You may chose to let it bypass the speed caps.
