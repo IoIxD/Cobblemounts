@@ -18,7 +18,7 @@
 # Ground speed 3 @ 350 spd
 groundCappedSpeed = true    # Linear default : true
 groundUseLogScaling = true  # Linear default : false
-groundSpeedScalar = 150     # Linear default : 170
+groundSpeedScalar = 150.0   # Linear default : 170
 groundSpeedCap = 3.0        # Linear default : 0.4
 
 # Flight is extremely versatile, so its capped at 2. Also, speed 1 is 
