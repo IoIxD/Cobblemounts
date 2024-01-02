@@ -69,7 +69,7 @@ public class PokemonUpdateTick {
                         }
                     }
                 } else {
-                    movementSpeed = (player.getMovementSpeed() * ((float)Math.log((pokemonData.getSpeed() + speedScalar) / speedScalar))) / 5.0f;
+                    movementSpeed = (player.getMovementSpeed() * (2.5f*(float)Math.log((pokemonData.getSpeed() + speedScalar) / speedScalar))) / 5.0f;
                     if (isLegendary) {
                         if (isSpeedCapped) {
                             if (CobblemountsClient.SYNCED_CONFIG.legendaryModifierCapBreak) {
