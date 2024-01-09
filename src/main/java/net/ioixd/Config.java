@@ -14,10 +14,23 @@ import net.minecraft.network.PacketByteBuf;
 
 public class Config implements FabricPacket {
 
-    public boolean cappedSpeed = true;
-    public double speedCap = 0.15;
-    public double flyingSpeedCap = 0.15;
-    public double legendaryModifier = 0.05;
+    public boolean groundCappedSpeed = true;
+    public boolean groundUseLogScaling = true;
+    public double groundSpeedScalar = 150.0d;
+    public double groundSpeedCap = 3.0d;
+
+    public boolean flightCappedSpeed = true;
+    public boolean flightUseLogScaling = true;
+    public double flightSpeedScalar = 300.0d;
+    public double flightSpeedCap = 2.0d;
+
+    public boolean swimCappedSpeed = true;
+    public boolean swimUseLogScaling = true;
+    public double swimSpeedScalar = 75.0d;
+    public double swimSpeedCap = 4.0d;
+
+    public double legendaryModifier = 0.5d;
+    public boolean legendaryModifierCapBreak = true;
 
     public boolean allowFlying = true;
     public boolean allowSwimming = true;
@@ -29,10 +42,25 @@ public class Config implements FabricPacket {
 
     @Override
     public void write(PacketByteBuf p) {
-        p.writeBoolean(cappedSpeed);
-        p.writeDouble(speedCap);
+
+        p.writeBoolean(groundCappedSpeed);
+        p.writeBoolean(groundUseLogScaling);
+        p.writeDouble(groundSpeedScalar);
+        p.writeDouble(groundSpeedCap);
+
+        p.writeBoolean(flightCappedSpeed);
+        p.writeBoolean(flightUseLogScaling);
+        p.writeDouble(flightSpeedScalar);
+        p.writeDouble(flightSpeedCap);
+
+        p.writeBoolean(swimCappedSpeed);
+        p.writeBoolean(swimUseLogScaling);
+        p.writeDouble(swimSpeedScalar);
+        p.writeDouble(swimSpeedCap);
+
         p.writeDouble(legendaryModifier);
-        p.writeDouble(flyingSpeedCap);
+        p.writeBoolean(legendaryModifierCapBreak);
+        
         p.writeBoolean(allowFlying);
         p.writeBoolean(allowSwimming);
         p.writeEnumConstant(listUse);
@@ -109,12 +137,27 @@ public class Config implements FabricPacket {
             throw new RuntimeException(ex);
         }
 
-        this.cappedSpeed = toml.getBoolean("cappedSpeed", true);
-        this.speedCap = toml.getDouble("speedCap", 0.15);
-        this.legendaryModifier = toml.getDouble("legenedaryModifier", 0.05);
-        this.flyingSpeedCap = toml.getDouble("flyingSpeedCap", 0.15);
-        this.allowFlying = toml.getBoolean("allowFlying", true);
-        this.allowSwimming = toml.getBoolean("allowSwimming", true);
+        this.groundCappedSpeed = toml.getBoolean("groundCappedSpeed", true);
+        this.groundUseLogScaling = toml.getBoolean("groundUseLogScaling", false);
+        this.groundSpeedScalar = toml.getDouble("groundSpeedScalar", 150.0d);
+        this.groundSpeedCap = toml.getDouble("groundSpeedCap", 3.0d);
+
+        this.flightCappedSpeed = toml.getBoolean("flightCappedSpeed", true);
+        this.flightUseLogScaling = toml.getBoolean("flightUseLogScaling", true);
+        this.flightSpeedScalar = toml.getDouble("flightSpeedScalar", 300.0d);
+        this.flightSpeedCap = toml.getDouble("flightSpeedCap", 2.0d);
+
+        this.swimCappedSpeed = toml.getBoolean("swimCappedSpeed", true);
+        this.swimUseLogScaling = toml.getBoolean("swimUseLogScaling", true);
+        this.swimSpeedScalar = toml.getDouble("swimSpeedScalar", 75.0d);
+        this.swimSpeedCap = toml.getDouble("swimSpeedCap", 4.0d);
+
+        this.legendaryModifier = toml.getDouble("legenedaryModifier", 0.5d);
+        this.legendaryModifierCapBreak = toml.getBoolean("legenedaryModifierCapBreak", true);
+
+        this.allowFlying = true;
+        this.allowSwimming = true;
+
         String listUse = toml.getString("listUse", "").toLowerCase();
         switch (listUse) {
             case "blacklist":
@@ -137,12 +180,28 @@ public class Config implements FabricPacket {
 
     public static Config read(PacketByteBuf p) {
         var config = new Config();
-        config.cappedSpeed = p.readBoolean();
-        config.speedCap = p.readDouble();
-        config.legendaryModifier = p.readDouble();
-        config.flyingSpeedCap = p.readDouble();
+        
+        config.groundCappedSpeed = p.readBoolean();
+        config.groundUseLogScaling = p.readBoolean();
+        config.groundSpeedScalar = p.readDouble();
+        config.groundSpeedCap = p.readDouble();
+
+        config.flightCappedSpeed = p.readBoolean();
+        config.flightUseLogScaling = p.readBoolean();
+        config.flightSpeedScalar = p.readDouble();
+        config.flightSpeedCap = p.readDouble();
+
+        config.swimCappedSpeed = p.readBoolean();
+        config.swimUseLogScaling = p.readBoolean();
+        config.swimSpeedScalar = p.readDouble();
+        config.swimSpeedCap = p.readDouble();
+
+        config.swimSpeedCap = p.readDouble();
+        config.legendaryModifierCapBreak = p.readBoolean();
+        
         config.allowFlying = p.readBoolean();
         config.allowSwimming = p.readBoolean();
+
         config.listUse = p.readEnumConstant(ListUse.class);
         int s = p.readInt();
         config.list = new ArrayList<>(s);

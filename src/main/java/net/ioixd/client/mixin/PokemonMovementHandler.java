@@ -52,8 +52,7 @@ public abstract class PokemonMovementHandler extends LivingEntity {
         Block water = pokemon.getBlockStateAtPos().getBlock();
         boolean inLiquid = water instanceof FluidBlock;
 
-        float speedModifier = pokemonData.isLegendary() ? 0.0f
-                : (float) CobblemountsClient.SYNCED_CONFIG.legendaryModifier;
+
         AtomicBoolean isFlying = new AtomicBoolean(false);
         Vec3d moveXZ = movement;// movement.rotateY((float) Math.toRadians(-player.getYaw()));
         Vec3d forward = player.getRotationVector().normalize().multiply(movement.z);
@@ -99,14 +98,97 @@ public abstract class PokemonMovementHandler extends LivingEntity {
                             flying = false;
                             break;
                     }
-                    ;
+
                     if (condition) {
+                        // Let the spaghetti begin. Now may be time to say that I have NEVER coded Java before :s
+                        // First, decide between swimming or flying scalars
+                        float speedScalar = (float) CobblemountsClient.SYNCED_CONFIG.swimSpeedScalar;
+                        float speedCap = (float) CobblemountsClient.SYNCED_CONFIG.swimSpeedCap;
+                        boolean isSpeedCapped = CobblemountsClient.SYNCED_CONFIG.swimCappedSpeed;
+                        boolean useLogScaling = CobblemountsClient.SYNCED_CONFIG.swimUseLogScaling;
+                        
+                        if (flying) {
+                            speedScalar = (float) CobblemountsClient.SYNCED_CONFIG.flightSpeedScalar;
+                            speedCap = (float) CobblemountsClient.SYNCED_CONFIG.flightSpeedCap;
+                            isSpeedCapped = CobblemountsClient.SYNCED_CONFIG.flightCappedSpeed;
+                            useLogScaling = CobblemountsClient.SYNCED_CONFIG.flightUseLogScaling;
+                        }
+                        // Then, do some additional checks for legendaries
+                        float legendaryModifier = pokemonData.isLegendary() ? 0.0f
+                            : (float) CobblemountsClient.SYNCED_CONFIG.legendaryModifier;
+                        boolean isLegendary = pokemonData.isLegendary();
+                 
+                        // Fun fact, in a previous itteration, I repeated this code twice with a check to see if we
+                        // were opperating in swim mode or flight mode. I need coffee.
+                        // elifelifelifelifelifelifelifelifelifelifelif...
+                        float flyingSpeed = 0.0f;
                         if (flyMove.z != 0.0) {
-                            double flyingSpeed = ((pokemonData.getSpeed() / 64.0f) + speedModifier) * 8.0;
-                            if (CobblemountsClient.SYNCED_CONFIG.cappedSpeed) {
-                                if (flyingSpeed >= CobblemountsClient.SYNCED_CONFIG.flyingSpeedCap) {
-                                    flyingSpeed = CobblemountsClient.SYNCED_CONFIG.flyingSpeedCap;
+                            // Step 1 : check if using log or lin scaling
+                            if (!useLogScaling) {
+                                // Step 2 : compute the base flight speed
+                                flyingSpeed = ((pokemonData.getSpeed() / 256.0f) * (speedScalar / 2.0f));
+                                // Step 3 : check if the cobblemon is legendary
+                                 if (isLegendary) {
+                                    // Step 3.1 : check if speed cap is applied
+                                    if (isSpeedCapped) {
+                                        // Step 3.2 : check if speed cap breaking is allowed
+                                        if (CobblemountsClient.SYNCED_CONFIG.legendaryModifierCapBreak) {
+                                            // Step 3.3 : compute final speed based on broken cap
+                                            if (flyingSpeed >= speedCap) {
+                                                flyingSpeed = (speedCap + ((legendaryModifier * speedScalar) / 2.0f));
+                                            } else {
+                                                flyingSpeed = (flyingSpeed + ((legendaryModifier * speedScalar) / 2.0f));
+                                            }
+                                        } else {
+                                            flyingSpeed = (flyingSpeed + ((legendaryModifier * speedScalar) / 2.0f));
+                                            if (flyingSpeed >= speedCap) {
+                                                flyingSpeed = speedCap;
+                                            }
+                                        }
+                                    } else {
+                                        flyingSpeed = (flyingSpeed + ((legendaryModifier * speedScalar) / 2.0f));
+                                    }
+                                } else {
+                                    // If the cobblemon isn't legendary, at least there's no cap-breaking shenanigans.
+                                    if (isSpeedCapped) {
+                                        if (flyingSpeed >= speedCap) {
+                                            flyingSpeed = speedCap;
+                                        }
+                                    }
                                 }
+                            } else {
+                                // We're not done yet ! We still need to do the SAME EXACT THING but for LOGARITHMIC SCALING !!!!!!
+                                // Step 2
+                                flyingSpeed = 2.5f * (float)Math.log((pokemonData.getSpeed() + speedScalar) / speedScalar);
+                                // Step 3
+                                if (isLegendary) {
+                                    // Step 3.1
+                                    if (isSpeedCapped) {
+                                        // Step 3.2
+                                        if (CobblemountsClient.SYNCED_CONFIG.legendaryModifierCapBreak) {
+                                            // Step 3.3
+                                            if (flyingSpeed >= speedCap) {
+                                                flyingSpeed = (speedCap + legendaryModifier);
+                                            } else {
+                                                flyingSpeed = (flyingSpeed + legendaryModifier);
+                                            }
+                                        } else {
+                                            flyingSpeed = (flyingSpeed + legendaryModifier);
+                                            if (flyingSpeed >= speedCap) {
+                                                flyingSpeed = speedCap;
+                                            }
+                                        }
+                                    } else {
+                                        flyingSpeed = (flyingSpeed + legendaryModifier);
+                                    }
+                                } else {
+                                    if (isSpeedCapped) {
+                                        if (flyingSpeed >= speedCap) {
+                                           flyingSpeed = speedCap;
+                                        }
+                                    }
+                                }
+
                             }
                             pokemon.move(MovementType.SELF, flyMove.multiply(flyingSpeed));
                             isFlying.set(true);
@@ -119,7 +201,7 @@ public abstract class PokemonMovementHandler extends LivingEntity {
                         pokemon.setPose(EntityPose.STANDING);
                     }
                     break;
-            }
+            }        
         });
         if (!isFlying.get()) {
             if (!(player instanceof ServerPlayerEntity) && MinecraftClient.getInstance().options.jumpKey.isPressed()
