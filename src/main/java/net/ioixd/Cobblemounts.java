@@ -6,7 +6,8 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.item.Item;
+import net.minecraft.entity.ai.goal.EatGrassGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -65,12 +66,9 @@ public class Cobblemounts implements ModInitializer {
 							}
 
 						}
-						Item item = player.getMainHandStack().getItem();
-						if (!item.getTranslationKey().contains("item.cobblemon")) {
+						if (player.getMainHandStack().isEmpty()) {
 							player.startRiding(entity, false);
-							pkmnEntity.clearGoalsAndTasks();
 						}
-
 					}
 				}
 			}
