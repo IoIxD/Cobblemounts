@@ -1,6 +1,5 @@
 package net.ioixd.mixin;
 
-
 import com.cobblemon.mod.common.entity.pokemon.PokemonBehaviourFlag;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import net.ioixd.Cobblemounts;
@@ -33,7 +32,7 @@ public abstract class PokemonServersideTickMixin extends LivingEntity {
         super(entityType, world);
     }
 
-    @Inject(method = "tick",at = @At("TAIL"))
+    @Inject(method = "tick", at = @At("TAIL"))
     protected void tick(CallbackInfo ci) {
         var pokemon = (PokemonEntity) (Object) this;
         var envcfg = pokemon.getWorld() instanceof ServerWorld ? Cobblemounts.CONFIG : CobblemountsClient.SYNCED_CONFIG;
@@ -48,7 +47,7 @@ public abstract class PokemonServersideTickMixin extends LivingEntity {
         var pokemonName = pokemonData.getSpecies().getName().toLowerCase();
         pokemonData.getTypes().forEach(ty -> {
             var name = ty.getName();
-            if(envcfg.alsoFlyList.contains(pokemonName)){
+            if (envcfg.alsoFlyList.contains(pokemonName)) {
                 name = "flying";
             }
             switch (name) {
@@ -97,7 +96,7 @@ public abstract class PokemonServersideTickMixin extends LivingEntity {
         if (envcfg.allowFlying) {
             pokemonData.getTypes().forEach(ty -> {
                 var name = ty.getName();
-                if(envcfg.alsoFlyList.contains(pokemonName)){
+                if (envcfg.alsoFlyList.contains(pokemonName)) {
                     name = "flying";
                 }
                 if (name.equals("flying")) {

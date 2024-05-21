@@ -37,6 +37,7 @@ public class Config implements FabricPacket {
 
     public List<String> list = new ArrayList<>();
     public List<String> alsoFlyList = new ArrayList<>();
+    public List<String> alsoSwimList = new ArrayList<>();
 
     public ListUse listUse;
 
@@ -60,7 +61,7 @@ public class Config implements FabricPacket {
 
         p.writeDouble(legendaryModifier);
         p.writeBoolean(legendaryModifierCapBreak);
-        
+
         p.writeBoolean(allowFlying);
         p.writeBoolean(allowSwimming);
         p.writeEnumConstant(listUse);
@@ -73,6 +74,11 @@ public class Config implements FabricPacket {
         size = alsoFlyList.size();
         p.writeInt(size);
         for (String value : alsoFlyList) {
+            p.writeString(value);
+        }
+        size = alsoSwimList.size();
+        p.writeInt(size);
+        for (String value : alsoSwimList) {
             p.writeString(value);
         }
     }
@@ -176,11 +182,14 @@ public class Config implements FabricPacket {
         this.alsoFlyList = toml.getList("alsoFlying", new ArrayList<String>()).stream().map(f -> {
             return f.toLowerCase();
         }).toList();
+        this.alsoSwimList = toml.getList("alsoSwimming", new ArrayList<String>()).stream().map(f -> {
+            return f.toLowerCase();
+        }).toList();
     }
 
     public static Config read(PacketByteBuf p) {
         var config = new Config();
-        
+
         config.groundCappedSpeed = p.readBoolean();
         config.groundUseLogScaling = p.readBoolean();
         config.groundSpeedScalar = p.readDouble();
@@ -198,7 +207,7 @@ public class Config implements FabricPacket {
 
         config.swimSpeedCap = p.readDouble();
         config.legendaryModifierCapBreak = p.readBoolean();
-        
+
         config.allowFlying = p.readBoolean();
         config.allowSwimming = p.readBoolean();
 
@@ -214,6 +223,12 @@ public class Config implements FabricPacket {
         for (int i = 0; i < s; i++) {
             var str = p.readString();
             config.alsoFlyList.add(str);
+        }
+        s = p.readInt();
+        config.alsoSwimList = new ArrayList<>(s);
+        for (int i = 0; i < s; i++) {
+            var str = p.readString();
+            config.alsoSwimList.add(str);
         }
         return config;
     }

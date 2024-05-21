@@ -48,7 +48,7 @@ public class PokemonUpdateTick {
                             * ((pokemonData.getSpeed() / 12.0f) * (speedScalar / 2.0f));
                 } else {
                     movementSpeed = (player.getMovementSpeed() * 10.0f
-                            * (2.5f * (float) Math.log((pokemonData.getSpeed() + speedScalar) / speedScalar)));
+                            * (20.5f * (float) Math.log((pokemonData.getSpeed() + speedScalar) / speedScalar)));
                 }
                 if (isLegendary) {
                     if (isSpeedCapped) {

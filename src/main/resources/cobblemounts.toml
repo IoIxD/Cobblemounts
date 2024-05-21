@@ -18,7 +18,7 @@
 # Ground speed 2 @ 600 spd
 groundCappedSpeed = true    # Linear default : true
 groundUseLogScaling = false # Linear default : false
-groundSpeedScalar = 0.75   # Linear default : 170
+groundSpeedScalar = 0.8     # Linear default : 170
 groundSpeedCap = 2.0        # Linear default : 0.4
 
 # Flight is extremely versatile, so its capped at 2. Also, speed 1 is 
@@ -27,19 +27,19 @@ groundSpeedCap = 2.0        # Linear default : 0.4
 # Flight speed 0.5 @ 100 spd
 # Flight speed 1 @ 200 spd
 # Flight speed 1.5 @ 350 spd
-flightCappedSpeed = true    # Linear default : true 
-flightUseLogScaling = true  # Linear default : false 
-flightSpeedScalar = 450.0   # Linear default : 64.0
-flightSpeedCap = 1.75        # Linear default : 3.0
+flightCappedSpeed = true   # Linear default : true 
+flightUseLogScaling = true # Linear default : false 
+flightSpeedScalar = 450.0  # Linear default : 64.0
+flightSpeedCap = 1.75      # Linear default : 3.0
 
 # Swimming is the most niche ability, so it's uncapped and scales the hardest.
 # Swim speed 1 @ 70 spd
 # Swim speed 2 @ 200 spd
 # Swim speed 3 @ 350 spd 
-swimCappedSpeed = false     # Linear default : true
-swimUseLogScaling = true    # Linear default : false
-swimSpeedScalar = 300.0     # Linear default : 64.0
-swimSpeedCap = 3.0          # Linear default : 3.0
+swimCappedSpeed = false  # Linear default : true
+swimUseLogScaling = true # Linear default : false
+swimSpeedScalar = 300.0  # Linear default : 64.0
+swimSpeedCap = 3.0       # Linear default : 3.0
 
 # Legendaries get a speed boost accounted for in the formula.
 # You may chose to let it bypass the speed caps.
@@ -50,6 +50,6 @@ legendaryModifierCapBreak = true
 allowFlying = true
 allowSwimming = true
 
-list = []                # Which Pokemon you can or can't mount.
-alsoFlying = []          # Which Pokemons can fly, ignoring its types
-listUse = ""             # Set to "blacklist" or "whitelist" to control the behavior of the below list. If it is an invalid option or blank, the option isn't used.
+list = []       # Which Pokemon you can or can't mount.
+alsoFlying = [] # Which Pokemons can fly, ignoring its types
+listUse = ""    # Set to "blacklist" or "whitelist" to control the behavior of the below list. If it is an invalid option or blank, the option isn't used.
